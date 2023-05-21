@@ -1,0 +1,84 @@
+{
+    "focus_group": {
+        "min_personas": 10,
+        "api": {
+            "temperature": 0.75,
+            "frequency_penalty": 0,
+            "presence_penalty": 0.75,
+            "max_retries": 3
+        }
+    },
+    "init_interview": {
+        "api": {
+            "temperature": 0.75,
+            "frequency_penalty": 0,
+            "presence_penalty": 0.75,
+            "max_previous_content": 2,
+            "max_retries": 3
+        }
+    },
+    "init_interview_questions": {
+        "question_count": 4,
+        "api": {
+            "temperature": 0.75,
+            "frequency_penalty": 0,
+            "presence_penalty": 0.75,
+            "max_retries": 3
+        }
+    },
+    "imagine_products": {
+        "product_count": 10,
+        "sample_size": 3,
+        "api": {
+            "temperature": 0.75,
+            "frequency_penalty": 0,
+            "presence_penalty": 0.75,
+            "max_retries": 3
+        }
+    },
+    "feedback_questions": {
+        "question_count": 7,
+        "api": {
+            "temperature": 0.75,
+            "frequency_penalty": 0,
+            "presence_penalty": 0.75,
+            "max_retries": 3
+        }
+    },
+    "feedback_interviews": {
+        "api": {
+            "temperature": 0.25,
+            "frequency_penalty": 0,
+            "presence_penalty": 0.25,
+            "max_retries": 3
+        }
+    },
+    "summarize_feedback": {
+        "api": {
+            "temperature": 0.25,
+            "frequency_penalty": 0,
+            "presence_penalty": 0.25,
+            "max_retries": 3
+        }
+    },
+    "evolve_product": {
+        "api": {
+            "temperature": 0.75,
+            "frequency_penalty": 0,
+            "presence_penalty": 0.75,
+            "max_retries": 3
+        }
+    },
+    "iterations": [
+        {
+            "new_personas": false,
+            "new_questions": false
+        } ,
+        {
+            "new_personas": true,
+            "min_personas": 15,
+            "new_questions": true,
+            "question_count": 8
+        } 
+    ]
+}

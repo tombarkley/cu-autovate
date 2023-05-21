@@ -1,0 +1,21 @@
+Please present one product description back.  
+You should layout the features of the product as well as any specific mechanics.
+Please return the product description in the following format:
+```
+{
+    "product_name": "Product Name",
+    "product_description": "This is a product description",
+    "product_features": [
+        "Feature 1",
+        "Feature 2",
+        "Feature 3"
+    ],
+    "product_mechanics": [
+        "Mechanic 1",
+        "Mechanic 2",
+        "Mechanic 3"
+    ],
+    "product_advertisement": "This is a brief product advertisement"
+}
+```
+Please do not return the sample value. 

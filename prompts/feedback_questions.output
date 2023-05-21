@@ -1,0 +1,38 @@
+Please provide your output a JSON.:
+Here is an example:
+```
+[
+    {
+        "question": "What do you like about the product?",
+        "response_type": "text"
+    },
+    {
+        "question": "What do you dislike about the product?",
+        "response_type": "text"
+    },
+    {
+        "question": "What would you change about the product?",
+        "response_type": "text"
+    },
+    {
+        "question": "How would you improve the product?",
+        "response_type": "text"
+    },
+    {
+        "question": "On a scale of 1-10, how likely are you to sign up for this product yourself?",
+        "response_type": "number_scale"
+    },
+    {
+        "question": "On a scale of 1-10, how likely are you to recommend this product to a friend?",
+        "response_type": "number_scale"
+    },
+    {
+        "question": "What other feedback do you have?",
+        "response_type": "text"
+    }
+]
+```
+"response_type" can be "text" or "number_scale" only.  
+If it is "number_scale" the question itself must request an answer on a scale of 1-10.
+You can use questions included in the example above or create your own.
+Please return [question_count] questions.

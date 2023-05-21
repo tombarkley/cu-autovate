@@ -1,0 +1,6 @@
+Please provide your output a JSON array of numbers.
+Here is an example:
+```
+[1, 8, 3, 4, 5, 6, 7, 2, 9, 10]
+```
+The numbers should correspond to a 1-10 number scale for where you think each respondent would grade their response to the question using only a number.

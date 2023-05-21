@@ -5,7 +5,7 @@
 # the persona details for the innovator will be set by the autovator.prompt file in the prompts folder
 # the autovator will leverage the openai api to create a focus group that consists of a certain number of personas
 # the instruction for the focus group will be set by the focusgroup.prompt file in the prompts folder
-# the application will save the focus group personas as individual files in a folder called focusgrouppersonas under the res_id folder
+# the application will save the focus group personas as individual files in a folder called personas under the res_id folder
 
 # import the openai library
 import openai
@@ -15,6 +15,7 @@ import time
 import datetime
 import ast
 import random
+import shutil
 
 openai.api_key = os.environ["OPENAI_API_KEY"]
 
@@ -34,10 +35,11 @@ def save_json(folder, file_name, file_content):
 
 # function to create a new folder under results
 def create_results_folder(res_id):
+    res_id = str(res_id)
     results_folder = os.getcwd() + "/results/" + res_id
     os.mkdir(results_folder)
     # create a folder for the focus group personas
-    focus_group_personas_folder = results_folder + "/focusgrouppersonas"
+    focus_group_personas_folder = results_folder + "/personas"
     os.mkdir(focus_group_personas_folder)
     # create an iterations folder
     iterations_folder = results_folder + "/iterations"
@@ -53,6 +55,10 @@ def save_iteration_results(results_folder, iteration, iteration_results):
     iteration_file.write(json.dumps(iteration_results))
     iteration_file.close()
 
+def copy_files(prev_directory, new_directory):
+    for file in os.listdir(prev_directory):
+        shutil.copy(prev_directory + "/" + file, new_directory + "/" + file)
+
 # function to call open ai api to create the focus group personas
 def api_create_focus_group_personas(persona_count, settings):
     focus_group_prompt = import_prompt("market_research_firm", "context")
@@ -66,9 +72,9 @@ def api_create_focus_group_personas(persona_count, settings):
     focus_group_prompt += "\n\n"
     focus_group_prompt += import_prompt("focus_group", "output")
     focus_group_prompt = focus_group_prompt.replace("[persona_count]", str(persona_count))
-    return get_ai_response(focus_group_prompt, "json", [], settings['api'])
+    return get_ai_completion(focus_group_prompt, "json", [], settings['api'])
 
-def get_ai_response(prompt, response_type, previous_content=[], input_settings={}):
+def get_ai_completion(prompt, response_type, previous_content=[], input_settings={}):
     api_settings = {
         "temperature": 1.3,
         "max_tokens": 1500,
@@ -167,6 +173,70 @@ def get_ai_response(prompt, response_type, previous_content=[], input_settings={
                 # print(response)
         return ret_num
 
+def get_ai_edit(input, prompt, response_type, input_settings={}):
+    api_settings = {
+        "temperature": 0.5,
+        "top_p": 1.0,
+        "max_retries": 3
+    }
+    for key in api_settings:
+        if key in input_settings:
+            api_settings[key] = input_settings[key]
+    retry_count = 0
+    if response_type == "text":
+        ret_string = ""
+        while retry_count < api_settings['max_retries'] or retry_count == 0:
+            try:
+                response = openai.Edit.create(
+                    model="text-davinci-edit-001",
+                    instruction=prompt,
+                    input=input,
+                    temperature=api_settings['temperature'],
+                    top_p=1.0
+                )
+                # print("got response")
+                # print(response)
+                response_string = response.choices[0].text
+                ret_string = response_string
+                retry_count = api_settings['max_retries'] + 1
+            except Exception as error:
+                print(error)
+                print("error parsing response")
+                retry_count += 1
+                print()
+                try:
+                    print(response)
+                except:
+                    print("error printing response")
+        return ret_string
+    elif response_type == "json":
+        ret_json = []
+        while retry_count < api_settings['max_retries'] or retry_count == 0:
+            try:
+                response = openai.Edit.create(
+                    model="text-davinci-edit-001",
+                    instruction=prompt,
+                    input=input,
+                    temperature=api_settings['temperature'],
+                    top_p=1.0
+                )
+                # print("got response")
+                # print(response)
+                response_string = response.choices[0].text
+                ret_json = ast.literal_eval(response_string)
+                retry_count = api_settings['max_retries'] + 1
+            except Exception as error:
+                print(error)
+                print("error parsing response")
+                retry_count += 1
+                print()
+                try:
+                    print(response)
+                except:
+                    print("error printing response")
+        return ret_json
+    
+
 def create_init_interview_questions(question_count, api_settings):
     questions_prompt = import_prompt("market_research_firm", "context")
     questions_prompt += "\n\n"
@@ -179,7 +249,7 @@ def create_init_interview_questions(question_count, api_settings):
     questions_prompt += "\n\n"
     questions_prompt += import_prompt("interview_questions", "output")
     questions_prompt = questions_prompt.replace("[question_count]", str(question_count))
-    return get_ai_response(questions_prompt, "json", [], api_settings)
+    return get_ai_completion(questions_prompt, "json", [], api_settings)
 
 def consumer_init_interview(persona, questions, api_settings):
     # context:
@@ -205,7 +275,7 @@ def consumer_init_interview(persona, questions, api_settings):
         # print("question:")
         # print(question)
         result_set.append({"role": "user", "content": question})
-        question_response = get_ai_response(interview_prompt, "text", result_set, api_settings)
+        question_response = get_ai_completion(interview_prompt, "text", result_set, api_settings)
         # print("response:")
         # print(question_response)
         result_set.append({"role": "assistant", "content": question_response})
@@ -230,7 +300,7 @@ def imagine_products(interview_results, api_settings):
     # output:
     imagine_prompt += import_prompt("imagine_products", "output")
     # print(imagine_prompt)
-    return get_ai_response(imagine_prompt, "json", [], api_settings)
+    return get_ai_completion(imagine_prompt, "json", [], api_settings)
 
 def create_feedback_questions(question_count, api_settings):
     questions_prompt = import_prompt("market_research_firm", "context")
@@ -244,7 +314,7 @@ def create_feedback_questions(question_count, api_settings):
     questions_prompt += "\n\n"
     questions_prompt += import_prompt("feedback_questions", "output")
     questions_prompt = questions_prompt.replace("[question_count]", str(question_count))
-    return get_ai_response(questions_prompt, "json", [], api_settings)
+    return get_ai_completion(questions_prompt, "json", [], api_settings)
 
 def consumer_feedback_interview(product, persona, questions, api_settings):
     # context:
@@ -276,7 +346,7 @@ def consumer_feedback_interview(product, persona, questions, api_settings):
         else:
             question_prompt = feedback_prompt + text_prompt
         result_set.append({"role": "user", "content": question["question"]})
-        question_response = get_ai_response(question_prompt, "text", result_set, api_settings)
+        question_response = get_ai_completion(question_prompt, "text", result_set, api_settings)
         # print("response:")
         # print(question_response)
         if question["response_type"] == "number_scale":
@@ -304,11 +374,27 @@ def analyze_product_feedback(feedback_results, response_type, api_settings):
     # output:
     if response_type == "number_scale":
         analyze_prompt += import_prompt("number_scale", "output")
-        return get_ai_response(analyze_prompt, "json", [], api_settings)
+        return get_ai_completion(analyze_prompt, "json", [], api_settings)
     else:
         analyze_prompt += import_prompt("summary", "output")
-        return get_ai_response(analyze_prompt, "text", [], api_settings)
+        return get_ai_completion(analyze_prompt, "text", [], api_settings)
 
+def edit_product(product, feedback_summary, api_settings):
+    # context:
+    autovator = import_prompt("autovator", "input")
+    autovator.replace("[I]", "You")
+    autovator.replace("[am]", "are")
+    edit_prompt = autovator
+    # instruction:
+    edit_prompt += "\n\n"
+    edit_prompt += import_prompt("edit_product", "instruction")
+    # input:
+    edit_prompt += "\n\n"
+    edit_prompt += json.dumps(feedback_summary)
+    edit_prompt += "\n\n"
+    # output:
+    edit_prompt += import_prompt("edit_json", "output")
+    return get_ai_edit(json.dumps(product), edit_prompt, "json", api_settings)
 
 def create_new_result_set():
     # create a unique id for the results set
@@ -329,15 +415,15 @@ def set_interview_questions(results_folder, settings):
 
 def set_personas(results_folder, settings):
     personas = []
-    for file in os.listdir(results_folder + "/focusgrouppersonas"):
-        personas.append(json.load(open(results_folder + "/focusgrouppersonas/" + file)))
+    for file in os.listdir(results_folder + "/personas"):
+        personas.append(json.load(open(results_folder + "/personas/" + file)))
     while len(personas) < settings['min_personas']:
         iter_personas = api_create_focus_group_personas(3, settings)
         # append each persona in iter_personas to focus_group_personas
         personas.extend(iter_personas)
         for persona in iter_personas:
             file_name = persona["firstName"] + "-" + persona["age"] + "-" + persona["occupation"] + "-" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + ".json"
-            save_json(results_folder + "/focusgrouppersonas", file_name, persona)
+            save_json(results_folder + "/personas", file_name, persona)
     return personas
 
 def conduct_init_interviews(results_folder, personas, init_interview_questions, settings):
@@ -391,6 +477,8 @@ def create_product_ideas(results_folder, all_interview_results, settings):
                         random_interview_results[key] = []
                     random_interview_results[key].append(all_interview_results[key][position])       
             product_ideas.append(imagine_products(random_interview_results, settings['api']))
+        # remove products in array that are empty
+        product_ideas = [product for product in product_ideas if product]
         save_json(results_folder, "product_ideas.json", product_ideas)
     return product_ideas
 
@@ -441,7 +529,6 @@ def conduct_feedback_interviews(results_folder, personas, product_ideas, feedbac
                     # product_feedback.append(json.load(open(product_folder + "/" + file)))
                 save_json(product_folder, "product_feedback.json", product_feedback)
         for folder in os.listdir(results_folder + "/feedback_interviews"):
-            
             feedback_interviews.append(json.load(open(results_folder + "/feedback_interviews/" + folder + "/product_feedback.json")))
         save_json(results_folder + "/feedback_interviews", "feedback_interviews.json", feedback_interviews)
     return feedback_interviews
@@ -475,81 +562,95 @@ def sum_feedback_interviews(results_folder, feedback_interviews, settings):
         save_json(results_folder, "sum_feedback_interviews.json", sum_feedback_interviews)
     return sum_feedback_interviews
 
+def evolve_product(results_folder, products, feedback_summary, settings):
+    evolved_folder = results_folder + "/evolved_products"
+    if not os.path.exists(evolved_folder):
+        os.makedirs(evolved_folder)
+    if os.path.exists(results_folder + "/evolved_products.json"):
+        evolved_products = json.load(open(evolved_folder + "/evolved_products.json"))
+    else:
+        evolved_products = []
+        for product in products:
+            if os.path.exists(evolved_folder + "/" + product["product_name"] + ".json"):
+                evolved_products.append(json.load(open(evolved_folder + "/" + product["product_name"] + ".json")))
+            else:
+                for feedback in feedback_summary:
+                    if feedback["product_name"] == product["product_name"]:
+                        product_feedback_summary = feedback["feedback"]
+                
+                evolved_product = edit_product(product, product_feedback_summary, settings['api'])
+                evolved_products.append(evolved_product)
+                save_json(evolved_folder, product["product_name"] + ".json", evolved_product)
+        evolved_products = [product for product in evolved_products if product]
+        save_json(evolved_folder, "evolved_products.json", evolved_products)
+    return evolved_products
+
+def log_milestones(input_text, res_id):
+    print(str(datetime.datetime.now()) + ' ' + input_text)
+    with open("results/" + str(res_id) + "/log.txt", "a") as myfile:
+        myfile.write(str(res_id) + ' ' + str(datetime.datetime.now()) + ' ' + input_text + "\n")
 
 def autovate_instance(res_id):
     results_folder = "results/" + str(res_id)
+    log_milestones("Starting autovate instance", res_id)
     settings = json.load(open("settings.json"))
     init_interview_questions = set_interview_questions(results_folder, settings['init_interview_questions'])
-
+    log_milestones("Created init questions", res_id)
     personas = set_personas(results_folder, settings['focus_group'])
+    log_milestones("Created personas", res_id)
     all_interview_results = conduct_init_interviews(results_folder, personas, init_interview_questions, settings['init_interview'])
+    log_milestones("Conducted init interviews", res_id)
     product_ideas = create_product_ideas(results_folder, all_interview_results, settings['imagine_products'])
-    for j in range(0, settings['iterations']):
+    log_milestones("Created init product ideas", res_id)
+    for j in range(0, len(settings['iterations'])):
         iter_directory = results_folder + '/iterations/' + str(j)
+        if j == 0:
+            prev_directory = results_folder
+        else:
+            prev_directory = results_folder + '/iterations/' + str(j-1)
         if not os.path.exists(iter_directory):
             os.makedirs(iter_directory)
-        feedback_questions = set_feedback_questions(iter_directory, settings['feedback_questions'])
+            os.makedirs(iter_directory + "/personas")
+        if j == 0 or settings['iterations'][j]['new_questions'] == True:
+            if settings['iterations'][j]['new_questions'] == False:
+                iteration_question_count = settings['feedback_questions']['question_count']
+            else:
+                iteration_question_count = settings['iterations'][j]['question_count']
+            feedback_questions = set_feedback_questions(iter_directory, {
+                "question_count": iteration_question_count,
+                "api": settings['feedback_questions']['api']
+            })
+            log_milestones("Created feedback questions for iteration " + str(j), res_id)
+        else:
+            feedback_questions = json.load(open(prev_directory + "/feedback_questions.json"))
+            save_json(iter_directory, "feedback_questions.json", feedback_questions)
+        if settings['iterations'][j]['new_personas'] == True:
+            personas = set_personas(iter_directory, {
+                "min_personas": settings['iterations'][j]['min_personas'],
+                "api": settings['focus_group']['api']
+            })
+            log_milestones("Created personas for iteration " + str(j), res_id)
+        else:
+            copy_files(prev_directory + "/personas", iter_directory + "/personas")
+            # personas is already set so no need to set again but copying files for trackability
         feedback_interviews = conduct_feedback_interviews(iter_directory, personas, product_ideas, feedback_questions, settings['feedback_interviews'])
+        log_milestones("Conducted feedback interviews for iteration " + str(j), res_id)
         feedback_summary = sum_feedback_interviews(iter_directory, feedback_interviews, settings['summarize_feedback'])
-    
+        log_milestones("Summarized feedback interviews for iteration " + str(j), res_id)
+        product_ideas = evolve_product(iter_directory, product_ideas, feedback_summary, settings['evolve_product'])
+        log_milestones("Evolved product ideas for iteration " + str(j), res_id)
+    save_json(results_folder, "final_products.json", product_ideas)
+    log_milestones("Finished autovate instance", res_id)
 
 
-    
 
-    
+# print timestamp
+# print(datetime.datetime.now())
+# print(datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
+
+new_result = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+print(new_result)
+
+autovate_instance(20230521120355)
 
 
-autovate_instance(20230520125944)
-
-
-# def add_to_focus_group(min_personas, results_folder):
-#     # create a list to hold the focus group personas
-#     focus_group_personas = []
-
-#     # while length of focus_group_personas is less than 10
-#     while len(focus_group_personas) < min_personas:
-#         iter_personas = api_create_focus_group_personas(3)
-#         # append each persona in iter_personas to focus_group_personas
-#         focus_group_personas.extend(iter_personas)
-
-#     # write the focus group personas to individual files
-#     for persona in focus_group_personas:
-#         file_name = persona["firstName"] + "-" + persona["age"] + "-" + persona["occupation"] + "-" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + ".json"
-#         save_json(results_folder + "/focusgrouppersonas", file_name, persona)
-
-# def get_ai_json(prompt, max_retries=3, previous_content=[], input_settings={}):
-#     api_settings = {
-#         "temperature": 1.3,
-#         "max_tokens": 1500,
-#         "frequency_penalty": 0.0,
-#         "presence_penalty": 0.75
-#     }
-#     # loop through api_settings and update the values with the values in input_settings if they exist
-#     for key in api_settings:
-#         if key in input_settings:
-#             api_settings[key] = input_settings[key]
-#     ret_json = []
-#     messages = []
-#     messages.append({"role": "system", "content": prompt})
-#     if len(previous_content) > 0:
-#         for message in previous_content:
-#             messages.append(message)
-#     retry_count = 0
-#     while retry_count < max_retries or retry_count == 0:
-#         try:
-#             response = openai.ChatCompletion.create(
-#                 model="gpt-3.5-turbo",
-#                 messages=messages,
-#                 temperature=temperature,
-#                 max_tokens=max_tokens,
-#                 frequency_penalty=frequency_penalty,
-#                 presence_penalty=presence_penalty
-#             )
-#             response_string = response.choices[0].message.content
-#             ret_json = ast.literal_eval(response_string)
-#             retry_count = max_retries
-#         except:
-#             print("error parsing response")
-#             retry_count += 1
-#             # print(response)
-#     return ret_json
