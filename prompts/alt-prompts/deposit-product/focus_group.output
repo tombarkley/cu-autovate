@@ -1,0 +1,19 @@
+Please present your output as a JSON with the following format:
+```
+{
+    "firstName": "Diana",
+    "city": "Plymouth",
+    "age": "39",
+    "occupation": "Nurse",
+    "hobbies": "reading, hiking, and playing the piano",
+    "personality": "introverted, friendly, and caring",
+    "goals": "to become a nurse practitioner, to get married, and to have children",
+    "challenges": "to find a job in a new city, to find a partner, and to find a house",
+    "motivations": "to help people, to make a difference, and to be successful",
+    "fears": "to lose her job, to lose her family, and to lose her health",
+    "values": "family, health, and honesty"
+}
+```
+Please do not return the sample value.
+Please return the personas in an array.
+Please return [persona_count] personas.

@@ -1,0 +1,10 @@
+Please provide your output as an array.
+Here is an example:
+```
+[
+    "Have you ever encountered any limitations or difficulties with a traditional savings account?",
+    "What features or benefits would make you consider switching to a new financial product?",
+    "What are your biggest concerns when it comes to saving money?"
+]
+```
+Please return [question_count] questions.

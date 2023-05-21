@@ -3,27 +3,27 @@ Here is an example:
 ```
 [
     {
-        "question": "What do you like about the product?",
+        "question": "What do you like about the service?",
         "response_type": "text"
     },
     {
-        "question": "What do you dislike about the product?",
+        "question": "What do you dislike about the service?",
         "response_type": "text"
     },
     {
-        "question": "What would you change about the product?",
+        "question": "What would you change about the service?",
         "response_type": "text"
     },
     {
-        "question": "How would you improve the product?",
+        "question": "How would you improve the service?",
         "response_type": "text"
     },
     {
-        "question": "On a scale of 1-10, how likely are you to sign up for this product yourself?",
+        "question": "On a scale of 1-10, how likely are you to sign up for this service yourself?",
         "response_type": "number_scale"
     },
     {
-        "question": "On a scale of 1-10, how likely are you to recommend this product to a friend?",
+        "question": "On a scale of 1-10, how likely are you to recommend this service to a friend?",
         "response_type": "number_scale"
     },
     {

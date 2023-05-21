@@ -16,6 +16,7 @@ import datetime
 import ast
 import random
 import shutil
+from multiprocessing.pool import ThreadPool
 
 openai.api_key = os.environ["OPENAI_API_KEY"]
 
@@ -120,6 +121,7 @@ def get_ai_completion(prompt, response_type, previous_content=[], input_settings
                 print(error)
                 print("error parsing response")
                 retry_count += 1
+                time.sleep(retry_count * 10)
                 print()
                 try:
                     print(response)
@@ -147,6 +149,7 @@ def get_ai_completion(prompt, response_type, previous_content=[], input_settings
                 print(error)
                 print("error parsing response")
                 retry_count += 1
+                time.sleep(retry_count * 10)
                 # print(response)
         return ret_json
     elif response_type == "number_scale":
@@ -170,6 +173,7 @@ def get_ai_completion(prompt, response_type, previous_content=[], input_settings
                 print(error)
                 print("error parsing response")
                 retry_count += 1
+                time.sleep(retry_count * 10)
                 # print(response)
         return ret_num
 
@@ -203,6 +207,7 @@ def get_ai_edit(input, prompt, response_type, input_settings={}):
                 print(error)
                 print("error parsing response")
                 retry_count += 1
+                time.sleep(retry_count * 10)
                 print()
                 try:
                     print(response)
@@ -229,6 +234,7 @@ def get_ai_edit(input, prompt, response_type, input_settings={}):
                 print(error)
                 print("error parsing response")
                 retry_count += 1
+                time.sleep(retry_count * 10)
                 print()
                 try:
                     print(response)
@@ -236,7 +242,6 @@ def get_ai_edit(input, prompt, response_type, input_settings={}):
                     print("error printing response")
         return ret_json
     
-
 def create_init_interview_questions(question_count, api_settings):
     questions_prompt = import_prompt("market_research_firm", "context")
     questions_prompt += "\n\n"
@@ -317,6 +322,7 @@ def create_feedback_questions(question_count, api_settings):
     return get_ai_completion(questions_prompt, "json", [], api_settings)
 
 def consumer_feedback_interview(product, persona, questions, api_settings):
+    print(persona['firstName'])
     # context:
     feedback_prompt = import_prompt("consumer_feedback", "context")
     feedback_prompt += "\n\n"
@@ -430,10 +436,12 @@ def conduct_init_interviews(results_folder, personas, init_interview_questions, 
     if os.path.exists(results_folder + "/all_interview_results.json"):
         all_interview_results = json.load(open(results_folder + "/all_interview_results.json"))
     else:
-        for persona in personas:
+        def do_interview(persona):
             if not os.path.exists(results_folder + "/init_interviews/" + persona["firstName"] + "-" + persona["age"] + "-" + persona["occupation"] + ".json"):
                 interview_results = consumer_init_interview(persona, init_interview_questions, settings['api'])
                 save_json(results_folder + "/init_interviews", persona["firstName"] + "-" + persona["age"] + "-" + persona["occupation"] + ".json", interview_results)
+        with ThreadPool() as pool:
+            pool.map(do_interview, personas)
         # load the interview results from results/ res_id / init_interviews
         # for each interview question in interview results
         all_interview_results = {}
@@ -457,7 +465,7 @@ def create_product_ideas(results_folder, all_interview_results, settings):
         product_ideas = json.load(open(results_folder + "/product_ideas.json"))
     else:
         product_ideas = []
-        for i in range(0, settings['product_count']):
+        def create_product_idea(i):
             # get a random interview question
             random_question = random.choice(list(all_interview_results.keys()))
             # get the length of the interview question result set
@@ -477,6 +485,8 @@ def create_product_ideas(results_folder, all_interview_results, settings):
                         random_interview_results[key] = []
                     random_interview_results[key].append(all_interview_results[key][position])       
             product_ideas.append(imagine_products(random_interview_results, settings['api']))
+        with ThreadPool() as pool:
+            pool.map(create_product_idea, range(0, settings['product_count']))
         # remove products in array that are empty
         product_ideas = [product for product in product_ideas if product]
         save_json(results_folder, "product_ideas.json", product_ideas)
@@ -498,10 +508,10 @@ def conduct_feedback_interviews(results_folder, personas, product_ideas, feedbac
     else:
         feedback_interviews = []
         for product in product_ideas:
-            # if "product_name" exists in product
-            if "product_name"  in product:
+            # if "name" exists in product
+            if "name"  in product:
                 product_feedback = {
-                    "product_name": product["product_name"],
+                    "name": product["name"],
                     "feedback": []
                 }
                 for item in feedback_questions:
@@ -510,13 +520,19 @@ def conduct_feedback_interviews(results_folder, personas, product_ideas, feedbac
                         "response_type": item["response_type"],
                         "results": []
                     }) 
-                product_folder = results_folder + "/feedback_interviews/" + product["product_name"]
+                product_folder = results_folder + "/feedback_interviews/" + product["name"]
                 if not os.path.exists(product_folder):
                     os.makedirs(product_folder)
-                for persona in personas:
+                def do_interview(persona):
                     if not os.path.exists(product_folder + "/" + persona["firstName"] + "-" + persona["age"] + "-" + persona["occupation"] + ".json"):
                         feedback_interview = consumer_feedback_interview(product, persona, feedback_questions, settings['api'])
                         save_json(product_folder, persona["firstName"] + "-" + persona["age"] + "-" + persona["occupation"] + ".json", feedback_interview)
+                with ThreadPool() as pool:
+                    pool.map(do_interview, personas)
+                # for persona in personas:
+                #     if not os.path.exists(product_folder + "/" + persona["firstName"] + "-" + persona["age"] + "-" + persona["occupation"] + ".json"):
+                #         feedback_interview = consumer_feedback_interview(product, persona, feedback_questions, settings['api'])
+                #         save_json(product_folder, persona["firstName"] + "-" + persona["age"] + "-" + persona["occupation"] + ".json", feedback_interview)
                 for file in os.listdir(product_folder):
                     interview_results = json.load(open(product_folder + "/" + file))
                     for item in interview_results:
@@ -538,13 +554,13 @@ def sum_feedback_interviews(results_folder, feedback_interviews, settings):
         sum_feedback_interviews = json.load(open(results_folder + "/sum_feedback_interviews.json"))
     else:
         sum_feedback_interviews = []
-        for product in feedback_interviews:
-            product_folder = results_folder + "/feedback_interviews/" + product["product_name"]
+        def get_summary(product):
+            product_folder = results_folder + "/feedback_interviews/" + product["name"]
             if os.path.exists(product_folder + "/sum_product_feedback_interviews.json"):
                 product_feedback = json.load(open(product_folder + "/sum_product_feedback_interviews.json"))
             else:
                 product_feedback = {
-                    "product_name": product["product_name"],
+                    "name": product["name"],
                     "feedback": []
                 }
                 for feedback in product["feedback"]:
@@ -559,6 +575,8 @@ def sum_feedback_interviews(results_folder, feedback_interviews, settings):
                     })
             save_json(product_folder, "sum_product_feedback_interviews.json", product_feedback)
             sum_feedback_interviews.append(product_feedback)
+        with ThreadPool() as pool:
+            pool.map(get_summary, feedback_interviews)
         save_json(results_folder, "sum_feedback_interviews.json", sum_feedback_interviews)
     return sum_feedback_interviews
 
@@ -570,17 +588,19 @@ def evolve_product(results_folder, products, feedback_summary, settings):
         evolved_products = json.load(open(evolved_folder + "/evolved_products.json"))
     else:
         evolved_products = []
-        for product in products:
-            if os.path.exists(evolved_folder + "/" + product["product_name"] + ".json"):
-                evolved_products.append(json.load(open(evolved_folder + "/" + product["product_name"] + ".json")))
+        def evolve_product(product):
+            if os.path.exists(evolved_folder + "/" + product["name"] + ".json"):
+                evolved_products.append(json.load(open(evolved_folder + "/" + product["name"] + ".json")))
             else:
                 for feedback in feedback_summary:
-                    if feedback["product_name"] == product["product_name"]:
+                    if feedback["name"] == product["name"]:
                         product_feedback_summary = feedback["feedback"]
                 
                 evolved_product = edit_product(product, product_feedback_summary, settings['api'])
                 evolved_products.append(evolved_product)
-                save_json(evolved_folder, product["product_name"] + ".json", evolved_product)
+                save_json(evolved_folder, product["name"] + ".json", evolved_product)
+        with ThreadPool() as pool:
+            pool.map(evolve_product, products)
         evolved_products = [product for product in evolved_products if product]
         save_json(evolved_folder, "evolved_products.json", evolved_products)
     return evolved_products
