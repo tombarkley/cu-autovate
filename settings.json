@@ -2,10 +2,10 @@
     "focus_group": {
         "min_personas": 10,
         "api": {
-            "temperature": 0.75,
+            "temperature": 1.00,
             "frequency_penalty": 0,
-            "presence_penalty": 0.75,
-            "max_retries": 3
+            "presence_penalty": 1.25,
+            "max_retries": 15
         }
     },
     "init_interview": {
@@ -14,7 +14,7 @@
             "frequency_penalty": 0,
             "presence_penalty": 0.75,
             "max_previous_content": 2,
-            "max_retries": 10
+            "max_retries": 15
         }
     },
     "init_interview_questions": {
@@ -23,17 +23,17 @@
             "temperature": 0.75,
             "frequency_penalty": 0,
             "presence_penalty": 0.75,
-            "max_retries": 3
+            "max_retries": 15
         }
     },
     "imagine_products": {
         "product_count": 10,
         "sample_size": 3,
         "api": {
-            "temperature": 0.75,
+            "temperature": 1.00,
             "frequency_penalty": 0,
             "presence_penalty": 0.75,
-            "max_retries": 3
+            "max_retries": 15
         }
     },
     "feedback_questions": {
@@ -42,12 +42,12 @@
             "temperature": 0.75,
             "frequency_penalty": 0,
             "presence_penalty": 0.75,
-            "max_retries": 3
+            "max_retries": 15
         }
     },
     "feedback_interviews": {
         "api": {
-            "temperature": 0.25,
+            "temperature": 0.45,
             "frequency_penalty": 0,
             "presence_penalty": 0.25,
             "max_retries": 10
@@ -58,27 +58,33 @@
             "temperature": 0.25,
             "frequency_penalty": 0,
             "presence_penalty": 0.25,
-            "max_retries": 10
+            "max_retries": 15
         }
     },
     "evolve_product": {
         "api": {
-            "temperature": 0.75,
+            "temperature": 0.50,
             "frequency_penalty": 0,
             "presence_penalty": 0.75,
-            "max_retries": 3
+            "max_retries": 15
         }
     },
     "iterations": [
         {
             "new_personas": false,
             "new_questions": false
-        } ,
+        },
         {
             "new_personas": true,
-            "min_personas": 15,
+            "min_personas": 10,
             "new_questions": true,
             "question_count": 8
+        },
+        {
+            "new_personas": true,
+            "min_personas": 10,
+            "new_questions": true,
+            "question_count": 5
         } 
     ]
 }

@@ -428,7 +428,7 @@ def set_personas(results_folder, settings):
         # append each persona in iter_personas to focus_group_personas
         personas.extend(iter_personas)
         for persona in iter_personas:
-            file_name = persona["firstName"] + "-" + persona["age"] + "-" + persona["occupation"] + "-" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + ".json"
+            file_name = persona["firstName"] + "-" + str(persona["age"]) + "-" + persona["occupation"] + "-" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + ".json"
             save_json(results_folder + "/personas", file_name, persona)
     return personas
 
@@ -437,9 +437,9 @@ def conduct_init_interviews(results_folder, personas, init_interview_questions, 
         all_interview_results = json.load(open(results_folder + "/all_interview_results.json"))
     else:
         def do_interview(persona):
-            if not os.path.exists(results_folder + "/init_interviews/" + persona["firstName"] + "-" + persona["age"] + "-" + persona["occupation"] + ".json"):
+            if not os.path.exists(results_folder + "/init_interviews/" + persona["firstName"] + "-" + str(persona["age"]) + "-" + persona["occupation"] + ".json"):
                 interview_results = consumer_init_interview(persona, init_interview_questions, settings['api'])
-                save_json(results_folder + "/init_interviews", persona["firstName"] + "-" + persona["age"] + "-" + persona["occupation"] + ".json", interview_results)
+                save_json(results_folder + "/init_interviews", persona["firstName"] + "-" + str(persona["age"]) + "-" + persona["occupation"] + ".json", interview_results)
         with ThreadPool() as pool:
             pool.map(do_interview, personas)
         # load the interview results from results/ res_id / init_interviews
@@ -489,6 +489,13 @@ def create_product_ideas(results_folder, all_interview_results, settings):
             pool.map(create_product_idea, range(0, settings['product_count']))
         # remove products in array that are empty
         product_ideas = [product for product in product_ideas if product]
+        # remove duplicate products from product_ideas based on product['name']
+        product_names = []
+        for product in product_ideas:
+            if product['name'] not in product_names:
+                product_names.append(product['name'])
+            else:
+                product_ideas.remove(product)
         save_json(results_folder, "product_ideas.json", product_ideas)
     return product_ideas
 
@@ -524,15 +531,15 @@ def conduct_feedback_interviews(results_folder, personas, product_ideas, feedbac
                 if not os.path.exists(product_folder):
                     os.makedirs(product_folder)
                 def do_interview(persona):
-                    if not os.path.exists(product_folder + "/" + persona["firstName"] + "-" + persona["age"] + "-" + persona["occupation"] + ".json"):
+                    if not os.path.exists(product_folder + "/" + persona["firstName"] + "-" + str(persona["age"]) + "-" + persona["occupation"] + ".json"):
                         feedback_interview = consumer_feedback_interview(product, persona, feedback_questions, settings['api'])
-                        save_json(product_folder, persona["firstName"] + "-" + persona["age"] + "-" + persona["occupation"] + ".json", feedback_interview)
+                        save_json(product_folder, persona["firstName"] + "-" + str(persona["age"]) + "-" + persona["occupation"] + ".json", feedback_interview)
                 with ThreadPool() as pool:
                     pool.map(do_interview, personas)
                 # for persona in personas:
-                #     if not os.path.exists(product_folder + "/" + persona["firstName"] + "-" + persona["age"] + "-" + persona["occupation"] + ".json"):
+                #     if not os.path.exists(product_folder + "/" + persona["firstName"] + "-" + str(persona["age"]) + "-" + persona["occupation"] + ".json"):
                 #         feedback_interview = consumer_feedback_interview(product, persona, feedback_questions, settings['api'])
-                #         save_json(product_folder, persona["firstName"] + "-" + persona["age"] + "-" + persona["occupation"] + ".json", feedback_interview)
+                #         save_json(product_folder, persona["firstName"] + "-" + str(persona["age"]) + "-" + persona["occupation"] + ".json", feedback_interview)
                 for file in os.listdir(product_folder):
                     interview_results = json.load(open(product_folder + "/" + file))
                     for item in interview_results:
@@ -606,9 +613,26 @@ def evolve_product(results_folder, products, feedback_summary, settings):
     return evolved_products
 
 def log_milestones(input_text, res_id):
+    print(res_id)
     print(str(datetime.datetime.now()) + ' ' + input_text)
     with open("results/" + str(res_id) + "/log.txt", "a") as myfile:
         myfile.write(str(res_id) + ' ' + str(datetime.datetime.now()) + ' ' + input_text + "\n")
+
+def sort_products(res_id):
+    init_products = json.load(open("results/" + str(res_id) + "/product_ideas.json"))
+    # sort products by product['name']
+    init_products = sorted(init_products, key=lambda k: k['name'])
+    save_json("results/" + str(res_id), "product_ideas.json", init_products)
+    final_products = json.load(open("results/" + str(res_id) + "/final_products.json"))
+    # sort products by product['name']
+    final_products = sorted(final_products, key=lambda k: k['name'])
+    save_json("results/" + str(res_id), "final_products.json", final_products)
+    # loop through iteration folders
+    for folder in os.listdir("results/" + str(res_id) + "/iterations"):
+        iter_products = json.load(open("results/" + str(res_id) + "/iterations/" + folder + "/evolved_products/evolved_products.json"))
+        # sort products by product['name']
+        iter_products = sorted(iter_products, key=lambda k: k['name'])
+        save_json("results/" + str(res_id) + "/iterations/" + folder + "/evolved_products", "evolved_products.json", iter_products)
 
 def autovate_instance(res_id):
     results_folder = "results/" + str(res_id)
@@ -661,6 +685,7 @@ def autovate_instance(res_id):
         log_milestones("Evolved product ideas for iteration " + str(j), res_id)
     save_json(results_folder, "final_products.json", product_ideas)
     log_milestones("Finished autovate instance", res_id)
+    sort_products(res_id)
 
 
 
@@ -668,9 +693,9 @@ def autovate_instance(res_id):
 # print(datetime.datetime.now())
 # print(datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
 
-new_result = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-print(new_result)
+# new_result = create_results_folder(datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
+# print(new_result)
 
-autovate_instance(20230521120355)
+autovate_instance(20230522132907)
 
 
