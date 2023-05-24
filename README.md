@@ -35,7 +35,7 @@ You will need to install the "openai" Python library.
 Clone this repository to your local machine.
 
 ```
-git clone https://github.com/<username>/cu-autovate.git
+git clone https://github.com/tombarkley/cu-autovate.git
 ```
 
 ## Usage
