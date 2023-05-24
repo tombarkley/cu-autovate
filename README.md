@@ -1,57 +1,64 @@
-# cu-autovate
 # you are a developer working on a Python project that automates "innovation"/product ideas by leveraging openAIs APIs to generate focus groups and iterate over product design.
 # the project is called cu-autovate
-# please create an outline for a github readme for this project
-# the outline should be formatted for github readmes
+# at its core, when run the program does the following:
+# 1. creates an initial set of focus group personas
+# 2. interviews the initial focus group around their needs
+# 3. based on the initial focus group data, "innovates" a set of new products
+# 4. brings that set of new product ideas back to the focus group and conducts feedback interviews
+# 5. summarizes that feedback
+# 6. evolves the products based on the focus group feedback
+# 7. repeats steps 4-7 a set number of iterations
+# 8. produces final products based on the iterations
+# important points:
+# - there is a settings.json file that contains all of the settings to control the program, the user will need to update the settings to their preference prior to running the program
+# - there are various prompts in the program that will need to be updated depending on use case, they are in the prompts folder, they will need to be updated prior to running the program
+# - example results can be found in the "example-results" branch
+# - will need to install the "openai" Python library
+# open source under MIT license
+# please create a github readme for this project
+# the readme should be formatted for github readmes and should include formatting such as headers and lists where appropriate
 
-Cu-Autovate is a Python automation project that uses OpenAI APIs to generate focus groups and intelligent product designs.
-
-## Table of Contents
-- [Overview](#overview)
-- [Getting Started](#getting-started)
-    - [Requirements](#requirements)
-    - [Installation](#installation)
-    - [Usage](#usage)
-- [Contributing](#contributing)
-- [Community](#community)
-- [License](#license)
-
-## Overview
-Cu-Autovate enables automated product development using OpenAI APIs and structured focus groups. It is designed to improve product innovation by connecting customers, stakeholders, and developers to generate focus groups with high-level product development insights.
+CU-Autovate is a Python project that automates "innovation"/product ideas by leveraging OpenAI's APIs to generate focus groups and iterate over product design.
 
 ## Getting Started
 
-### Requirements
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
-* Python 3.7+
-* OpenAI APIs
+### Prerequisites
 
-### Installation
+1. Python 3+
+2. OpenAI Python library
 
-To install Cu-Autovate, you will need to clone the latest version from our GitHub repository.
+### Installing
 
-```
-git clone https://github.com/cu-autovate/cu-autovate.git
-```
-
-### Usage
-
-Before you are able to use Cu-Autovate, you must specify the required parameters and run the program.
+1. Clone the repository
 
 ```
-python3 main.py [parameter_list]
+git clone https://github.com/username/cu-autovate.git
 ```
 
-## Contributing
+2. Install the OpenAI library
 
-We welcome contributions to the project from the open source community. For more information on how to get started contributing please refer to our [Contributing Guide](https://github.com/cu-autovate/cu-autovate/blob/master/.github/CONTRIBUTING.md).
+```
+pip install openai
+```
 
-## Community
+3. Update the settings.json file to your preference
 
-We have a thriving community where developers and stakeholders from all over the world meet to discuss product ideas and build innovative solutions. Join our Slack channel to stay up to date:
+4. Update the prompts in the prompts folder
 
-[Cu-Autovate on Slack](https://join.slack.com/t/cu-autovate/shared_invite/zt-fjo54cpm-7pMW_ViKXyPaEw6RqfdPqdQ#)
+### Running
+
+1. Run the program
+
+```
+python cu-autovate.py
+```
+
+### Results
+
+Example results can be found in the "example-results" branch.
 
 ## License
 
-This project is licensed under the GNU GPLv3 license. For more information, please refer to the [license information](https://github.com/cu-autovate/cu-autovate/blob/master/LICENSE).
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
