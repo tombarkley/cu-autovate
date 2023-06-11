@@ -57,6 +57,8 @@ These instructions will get you a copy of the project up and running on your loc
 
 You will need to install the "openai" Python library.
 
+You will need to have an account with OpenAI and have an API key.
+
 ### Installing
 
 Clone this repository to your local machine.
@@ -64,6 +66,8 @@ Clone this repository to your local machine.
 ```
 git clone https://github.com/tombarkley/cu-autovate.git
 ```
+
+Save your OpenAI API key to your environment variables as `OPENAI_API_KEY`.
 
 ## Usage
 
