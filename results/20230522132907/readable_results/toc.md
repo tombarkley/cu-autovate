@@ -8,25 +8,25 @@
 
 - Initial Product Ideas
 
-  - [Money Management App](Money_Management_App.md)
+  - [Money Management App](init_product_ideas/Money_Management_App.md)
 
-  - [Money Master](Money_Master.md)
+  - [Money Master](init_product_ideas/Money_Master.md)
 
-  - [MoneyTracker App](MoneyTracker_App.md)
+  - [MoneyTracker App](init_product_ideas/MoneyTracker_App.md)
 
-  - [MoneyWISE](MoneyWISE.md)
+  - [MoneyWISE](init_product_ideas/MoneyWISE.md)
 
-  - [My Money Manager](My_Money_Manager.md)
+  - [My Money Manager](init_product_ideas/My_Money_Manager.md)
 
-  - [MyCU Money Plan](MyCU_Money_Plan.md)
+  - [MyCU Money Plan](init_product_ideas/MyCU_Money_Plan.md)
 
-  - [MyMoney](MyMoney.md)
+  - [MyMoney](init_product_ideas/MyMoney.md)
 
-  - [Savvy Money Manager](Savvy_Money_Manager.md)
+  - [Savvy Money Manager](init_product_ideas/Savvy_Money_Manager.md)
 
-  - [SmartSpender](SmartSpender.md)
+  - [SmartSpender](init_product_ideas/SmartSpender.md)
 
-  - [SpendWise](SpendWise.md)
+  - [SpendWise](init_product_ideas/SpendWise.md)
 
 - Iteration 1
 

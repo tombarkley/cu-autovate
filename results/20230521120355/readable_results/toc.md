@@ -8,25 +8,25 @@
 
 - Initial Product Ideas
 
-  - [FlexiSave](FlexiSave.md)
+  - [FlexiSave](init_product_ideas/FlexiSave.md)
 
-  - [Rainy Day Savings Account](Rainy_Day_Savings_Account.md)
+  - [Rainy Day Savings Account](init_product_ideas/Rainy_Day_Savings_Account.md)
 
-  - [Savings Accelerator](Savings_Accelerator.md)
+  - [Savings Accelerator](init_product_ideas/Savings_Accelerator.md)
 
-  - [Savings Boost Account](Savings_Boost_Account.md)
+  - [Savings Boost Account](init_product_ideas/Savings_Boost_Account.md)
 
-  - [DreamSaver](DreamSaver.md)
+  - [DreamSaver](init_product_ideas/DreamSaver.md)
 
-  - [Flex Saver](Flex_Saver.md)
+  - [Flex Saver](init_product_ideas/Flex_Saver.md)
 
-  - [Dream Saver Account](Dream_Saver_Account.md)
+  - [Dream Saver Account](init_product_ideas/Dream_Saver_Account.md)
 
-  - [Accelerate Savings Account](Accelerate_Savings_Account.md)
+  - [Accelerate Savings Account](init_product_ideas/Accelerate_Savings_Account.md)
 
-  - [SmartSave](SmartSave.md)
+  - [SmartSave](init_product_ideas/SmartSave.md)
 
-  - [SmartSaver](SmartSaver.md)
+  - [SmartSaver](init_product_ideas/SmartSaver.md)
 
 - Iteration 1
 

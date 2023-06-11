@@ -762,7 +762,7 @@ def prettify_results(res_id):
             product_name = product["product_name"]
         init_product_ideas_md = create_product_md(product, "# " + product_name + "\n\n")
         save_md(target_folder + "/readable_results/init_product_ideas", product_name.replace(" ", "_") + ".md", init_product_ideas_md)
-        toc_md += "  - [" + product_name + "](" + product_name.replace(" ", "_") + ".md)\n\n"
+        toc_md += "  - [" + product_name + "](init_product_ideas/" + product_name.replace(" ", "_") + ".md)\n\n"
         init_product_ideas_md = ""
     
     ## loop through iterations folders in iterations folder by lowest number first
@@ -900,6 +900,7 @@ def autovate_instance(res_id):
 # print(new_result)
 
 # autovate_instance(20230522132907)
+# prettify_results(20230520125944)
 # prettify_results(20230521120355)
 # prettify_results(20230521182324)
 # prettify_results(20230522132907)

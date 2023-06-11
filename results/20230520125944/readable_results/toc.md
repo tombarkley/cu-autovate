@@ -8,11 +8,11 @@
 
 - Initial Product Ideas
 
-  - [Dream Saver Account](Dream_Saver_Account.md)
+  - [Dream Saver Account](init_product_ideas/Dream_Saver_Account.md)
 
-  - [Savings Challenge Account](Savings_Challenge_Account.md)
+  - [Savings Challenge Account](init_product_ideas/Savings_Challenge_Account.md)
 
-  - [Round-Up Savings](Round-Up_Savings.md)
+  - [Round-Up Savings](init_product_ideas/Round-Up_Savings.md)
 
 - Iteration 1
 

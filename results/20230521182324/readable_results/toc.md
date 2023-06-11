@@ -8,23 +8,23 @@
 
 - Initial Product Ideas
 
-  - [Money Master](Money_Master.md)
+  - [Money Master](init_product_ideas/Money_Master.md)
 
-  - [MoneyMentor](MoneyMentor.md)
+  - [MoneyMentor](init_product_ideas/MoneyMentor.md)
 
-  - [Money Management Assistant](Money_Management_Assistant.md)
+  - [Money Management Assistant](init_product_ideas/Money_Management_Assistant.md)
 
-  - [Moneywise](Moneywise.md)
+  - [Moneywise](init_product_ideas/Moneywise.md)
 
-  - [Money Management Companion](Money_Management_Companion.md)
+  - [Money Management Companion](init_product_ideas/Money_Management_Companion.md)
 
-  - [SmartSpend](SmartSpend.md)
+  - [SmartSpend](init_product_ideas/SmartSpend.md)
 
-  - [Personalized Financial Management App](Personalized_Financial_Management_App.md)
+  - [Personalized Financial Management App](init_product_ideas/Personalized_Financial_Management_App.md)
 
-  - [MyMoney](MyMoney.md)
+  - [MyMoney](init_product_ideas/MyMoney.md)
 
-  - [MyCredit Union Personalized Financial Management](MyCredit_Union_Personalized_Financial_Management.md)
+  - [MyCredit Union Personalized Financial Management](init_product_ideas/MyCredit_Union_Personalized_Financial_Management.md)
 
 - Iteration 1
 
