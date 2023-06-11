@@ -633,6 +633,73 @@ def sort_products(res_id):
         # sort products by product['name']
         iter_products = sorted(iter_products, key=lambda k: k['name'])
         save_json("results/" + str(res_id) + "/iterations/" + folder + "/evolved_products", "evolved_products.json", iter_products)
+def save_md(folder, filename, content):
+    with open(folder + "/" + filename, "w") as myfile:
+        myfile.write(content)
+
+
+def prettify_results(res_id):
+    target_folder = "results/" + str(res_id)
+    toc = {}
+    ## create folder for readable results
+    if not os.path.exists(target_folder + "/readable_results"):
+        os.makedirs(target_folder + "/readable_results")
+
+    ## create md file for initial questions from init_interview_questions.json
+    init_interview_questions = json.load(open(target_folder + "/init_interview_questions.json"))
+    init_interview_questions_md = "# Initial Interview Questions\n\n"
+    for question in init_interview_questions:
+        init_interview_questions_md += question + "\n\n"
+    save_md(target_folder + "/readable_results", "init_interview_questions.md", init_interview_questions_md)
+
+    ## create md file for personas from jsons in the personas folder
+    init_personas_md = "# Initial Personas\n\n"
+    for persona in os.listdir(target_folder + "/personas"):
+        # persona title should be all text before last - in filename
+        persona_id = persona.split("-")[-1].split(".")[0]
+        init_personas_md += "## " + persona.replace("-" + persona_id + ".json", "") + "\n\n"
+        # init_personas_md += "## " + persona_title + "\n\n"
+        persona_obj = json.load(open(target_folder + "/personas/" + persona))
+        for key in persona_obj:
+            init_personas_md += "**" + key + "**: " + "\n\n"
+            ## if key is a list
+            if isinstance(persona_obj[key], list):
+                for item in persona_obj[key]:
+                    init_personas_md += "- " + item + "\n\n"
+            ## if key is a dict
+            elif isinstance(persona_obj[key], dict):
+                for item in persona_obj[key]:
+                    init_personas_md += "- " + item + ": " + persona_obj[key][item] + "\n\n"
+            ## if key is a string
+            else:
+                init_personas_md += "- " + persona_obj[key] + "\n\n"
+        init_personas_md += "\n\n"
+    save_md(target_folder + "/readable_results", "init_personas.md", init_personas_md)
+
+    ## create md file for each initial product idea from product_ideas.json in a new folder
+    init_product_ideas = json.load(open(target_folder + "/product_ideas.json"))
+    if not os.path.exists(target_folder + "/readable_results/init_product_ideas"):
+        os.makedirs(target_folder + "/readable_results/init_product_ideas")
+    for product in init_product_ideas:
+        init_product_ideas_md = "# " + product["product_name"] + "\n\n"
+        for key in product:
+            if key != "product_name":
+                init_product_ideas_md += "**" + key.replace("_", " ") + "**: \n\n"
+                ## if key is a list
+                if isinstance(product[key], list):
+                    for item in product[key]:
+                        init_product_ideas_md += "- " + item + "\n\n"
+                ## if key is a dict
+                elif isinstance(product[key], dict):
+                    for item in product[key]:
+                        init_product_ideas_md += "- " + item + ": " + product[key][item] + "\n\n"
+                ## if key is a string
+                else:
+                    init_product_ideas_md += "- " + product[key] + "\n\n"
+        save_md(target_folder + "/readable_results/init_product_ideas", product["product_name"] + ".md", init_product_ideas_md)
+        init_product_ideas_md = ""
+
+
 
 def autovate_instance(res_id):
     results_folder = "results/" + str(res_id)
@@ -696,6 +763,7 @@ def autovate_instance(res_id):
 # new_result = create_results_folder(datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
 # print(new_result)
 
-autovate_instance(20230522132907)
+# autovate_instance(20230522132907)
+prettify_results(20230520125944)
 
 
