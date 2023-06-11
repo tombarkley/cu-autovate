@@ -22,6 +22,19 @@ the readme should be formatted for github readmes and should include formatting 
 
 CU-Autovate is a Python project that automates "innovation"/product ideas by leveraging openAIs APIs to generate focus groups and iterate over product design.
 
+## Table of Contents
+
+- [Basic Overview](#basic-overview)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installing](#installing)
+- [Usage](#usage)
+  - [settings.json](#settingsjson)
+  - [prompts](#prompts)
+  - [Running the Program](#running-the-program)
+- [Example Results](#example-results)
+- [License](#license)
+
 ## Basic Overview
 
 When run, the program does the following:
