@@ -817,7 +817,7 @@ def prettify_results(res_id):
     for product in final_product_ideas:
         final_product_ideas_md = create_product_md(product, "# " + product["product_name"] + "\n\n")
         save_md(target_folder + "/readable_results/final_product_ideas", product["product_name"].replace(" ", "_") + ".md", final_product_ideas_md)
-        toc_md += "  - [" + product["product_name"] + "](" + product["product_name"].replace(" ", "_") + ".md)\n\n"
+        toc_md += "  - [" + product["product_name"] + "](final_product_ideas/" + product["product_name"].replace(" ", "_") + ".md)\n\n"
         final_product_ideas_md = "" 
 
     save_md(target_folder + "/readable_results", "toc.md", toc_md)
