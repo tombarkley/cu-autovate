@@ -50,7 +50,7 @@ python cu-autovate.py
 
 ## Example Results
 
-Example results can be found in the `example-results` branch.
+Example results can be found in the [`example-results`](https://github.com/tombarkley/cu-autovate/blob/example-results/results_toc.md) branch.
 
 ## License
 
