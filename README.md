@@ -220,47 +220,47 @@ The `prompts` folder contains the prompt files for the program. The prompt files
 The prompt files are combined in the order below for each function:
 
   - Creating Initial Interview Questions 
-    - 'market_research_firm.context'
-    - 'interview_questions.instruction'
-    - 'autovator.input'
-    - 'interview_questions.output'
+    - `market_research_firm.context`
+    - `interview_questions.instruction`
+    - `autovator.input`
+    - `interview_questions.output`
   - Creating Focus Group Personas
-    - 'market_research_firm.context'
-    - 'focus_group.instruction'
-    - 'autovator.input'
-    - 'focus_group.output'
+    - `market_research_firm.context`
+    - `focus_group.instruction`
+    - `autovator.input`
+    - `focus_group.output`
   - Conducting Initial Interviews
-    - 'consumer_init_interview.context'
-    - 'consumer_init_interview.instruction'
-    - 'autovator.input'
-    - 'text_conversation.output'
+    - `consumer_init_interview.context`
+    - `consumer_init_interview.instruction`
+    - `autovator.input`
+    - `text_conversation.output`
   - Creating Initial Products
-    - 'autovator.input'
-    - 'imagine_products.instruction'
-    - 'imagine_products.input'
-    - 'imagine_products.output'
+    - `autovator.input`
+    - `imagine_products.instruction`
+    - `imagine_products.input`
+    - `imagine_products.output`
   - Creating Feedback Questions
-    - 'market_research_firm.context'
-    - 'feedback_questions.instruction'
-    - 'autovator.input'
-    - 'feedback_questions.output'
+    - `market_research_firm.context`
+    - `feedback_questions.instruction`
+    - `autovator.input`
+    - `feedback_questions.output`
   - Conducting Feedback Interviews
-    - 'consumer_feedback.context'
+    - `consumer_feedback.context`
     - The instruction here feeds the personas and products from the previous steps
-    - 'autovator.input'
-    - 'text_conversation.output'
+    - `autovator.input`
+    - `text_conversation.output`
   - Summarizing Feedback
-    - 'autovator.input'
-    - 'analyze_feedback.instruction'
-    - 'analyze_feedback.input'
+    - `autovator.input`
+    - `analyze_feedback.instruction`
+    - `analyze_feedback.input`
     - Either of:
-      - 'number_scale.output'
-      - 'summary.output'
+      - `number_scale.output`
+      - `summary.output`
   - Evolving Products
-    - 'autovator.input'
-    - 'edit_product.instruction'
+    - `autovator.input`
+    - `edit_product.instruction`
     - The input is the feedback from the interviews
-    - 'edit_json.output'
+    - `edit_json.output`
 
 ### Running the Program
 
