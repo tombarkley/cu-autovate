@@ -705,17 +705,21 @@ def create_feedback_md(feedback, feedback_md):
     # print(feedback_md)
     for fb in feedback:
         for key in fb:
-            ## if key is a list
-            if isinstance(fb[key], list):
-                for item in fb[key]:
-                    feedback_md += "- " + item + "\n\n"
-            ## if key is a dict
-            elif isinstance(fb[key], dict):
-                for item in fb[key]:
-                    feedback_md += "- " + item + ": " + fb[key][item] + "\n\n"
-            ## if key is a string
-            else:
-                feedback_md += "- " + fb[key] + "\n\n"
+            ## add feedback question then feedback answer
+            feedback_md += "**" + key + "**: \n\n"
+            feedback_md += "- " + fb[key] + "\n\n"
+        # for key in fb:
+        #     ## if key is a list
+        #     if isinstance(fb[key], list):
+        #         for item in fb[key]:
+        #             feedback_md += "- " + item + "\n\n"
+        #     ## if key is a dict
+        #     elif isinstance(fb[key], dict):
+        #         for item in fb[key]:
+        #             feedback_md += "- " + item + ": " + fb[key][item] + "\n\n"
+        #     ## if key is a string
+        #     else:
+        #         feedback_md += "- " + fb[key] + "\n\n"
     return feedback_md
 
 def prettify_results(res_id):
@@ -736,7 +740,7 @@ def prettify_results(res_id):
     ## create md file for personas from jsons in the personas folder
     init_personas_md = create_personas_md(target_folder + "/personas", "# Initial Personas\n\n")
     save_md(target_folder + "/readable_results", "init_personas.md", init_personas_md)
-    toc_md += "- [Initial Personas](personas/init_personas.md)\n\n"
+    toc_md += "- [Initial Personas](init_personas.md)\n\n"
 
     ## create md file for interviews in init_interviews folder
     init_interviews_md = "# Initial Interviews\n\n"
@@ -752,9 +756,10 @@ def prettify_results(res_id):
         os.makedirs(target_folder + "/readable_results/init_product_ideas")
     toc_md += "- Initial Product Ideas\n\n"
     for product in init_product_ideas:
+        product_name = product["product_name"]
         init_product_ideas_md = create_product_md(product, "# " + product["product_name"] + "\n\n")
-        save_md(target_folder + "/readable_results/init_product_ideas", product["product_name"] + ".md", init_product_ideas_md)
-        toc_md += "  - [" + product["product_name"] + "](" + product["product_name"] + ".md)\n\n"
+        save_md(target_folder + "/readable_results/init_product_ideas", product_name.replace(" ", "_") + ".md", init_product_ideas_md)
+        toc_md += "  - [" + product_name + "](" + product_name.replace(" ", "_") + ".md)\n\n"
         init_product_ideas_md = ""
     
     ## loop through iterations folders in iterations folder by lowest number first
@@ -777,6 +782,7 @@ def prettify_results(res_id):
         save_md(target_folder + "/readable_results/" + iteration_number, "personas.md", personas_md)
         toc_md += "  - [Personas](" + iteration_number + "/personas.md)\n\n"
         ## create md file for each product folder in feedback_interviews folder
+        toc_md += "  - Feedback Interviews\n\n"
         if not os.path.exists(target_folder + "/readable_results/" + iteration_number + "/feedback_interviews"):
             os.makedirs(target_folder + "/readable_results/" + iteration_number + "/feedback_interviews")
         for product in os.listdir(target_folder + "/iterations/" + iteration + "/feedback_interviews"):
@@ -789,18 +795,18 @@ def prettify_results(res_id):
                         # print(interview)
                         feedback_interviews_md += "## " + interview.replace(".json", "") + "\n\n"
                         feedback_interviews_md = create_feedback_md(json.load(open(target_folder + "/iterations/" + iteration + "/feedback_interviews/" + product + "/" + interview)), feedback_interviews_md)
-                save_md(target_folder + "/readable_results/" + iteration_number + "/feedback_interviews", product.replace(".json", "") + ".md", feedback_interviews_md)
-                toc_md += "  - [" + product.replace(".json", "") + "](" + iteration_number + "/feedback_interviews/" + product.replace(".json", "") + ".md)\n\n"
+                save_md(target_folder + "/readable_results/" + iteration_number + "/feedback_interviews", product.replace(".json", "").replace(" ", "_") + ".md", feedback_interviews_md)
+                toc_md += "    - [" + product.replace(".json", "") + "](" + iteration_number + "/feedback_interviews/" + product.replace(".json", "").replace(" ", "_") + ".md)\n\n"
                 feedback_interviews_md = ""
         ## create md file for each product folder in evolved_products folder
-        toc_md += "- Evolved Products\n\n"
+        toc_md += "  - Evolved Products\n\n"
         if not os.path.exists(target_folder + "/readable_results/" + iteration_number + "/evolved_products"):
             os.makedirs(target_folder + "/readable_results/" + iteration_number + "/evolved_products")
         for product in os.listdir(target_folder + "/iterations/" + iteration + "/evolved_products"):
             if product != "evolved_products.json":
                 evolved_products_md = create_product_md(json.load(open(target_folder + "/iterations/" + iteration + "/evolved_products/" + product)), "# " + product.replace(".json", "") + "\n\n")
-                save_md(target_folder + "/readable_results/" + iteration_number + "/evolved_products", product.replace(".json", "") + ".md", evolved_products_md)
-                toc_md += "  - [" + product.replace(".json", "") + "](" + iteration_number + "/evolved_products/" + product.replace(".json", "") + ".md)\n\n"
+                save_md(target_folder + "/readable_results/" + iteration_number + "/evolved_products", product.replace(".json", "").replace(" ", "_") + ".md", evolved_products_md)
+                toc_md += "    - [" + product.replace(".json", "") + "](" + iteration_number + "/evolved_products/" + product.replace(".json", "").replace(" ", "_") + ".md)\n\n"
                 evolved_products_md = ""
 
     ## create md file for each final product idea from final_product_ideas.json in a new folder
@@ -810,8 +816,8 @@ def prettify_results(res_id):
     final_product_ideas = json.load(open(target_folder + "/final_products.json"))
     for product in final_product_ideas:
         final_product_ideas_md = create_product_md(product, "# " + product["product_name"] + "\n\n")
-        save_md(target_folder + "/readable_results/final_product_ideas", product["product_name"] + ".md", final_product_ideas_md)
-        toc_md += "  - [" + product["product_name"] + "](" + product["product_name"] + ".md)\n\n"
+        save_md(target_folder + "/readable_results/final_product_ideas", product["product_name"].replace(" ", "_") + ".md", final_product_ideas_md)
+        toc_md += "  - [" + product["product_name"] + "](" + product["product_name"].replace(" ", "_") + ".md)\n\n"
         final_product_ideas_md = "" 
 
     save_md(target_folder + "/readable_results", "toc.md", toc_md)
