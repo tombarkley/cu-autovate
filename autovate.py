@@ -634,6 +634,201 @@ def sort_products(res_id):
         iter_products = sorted(iter_products, key=lambda k: k['name'])
         save_json("results/" + str(res_id) + "/iterations/" + folder + "/evolved_products", "evolved_products.json", iter_products)
 
+def save_md(folder, filename, content):
+    with open(folder + "/" + filename, "w") as myfile:
+        myfile.write(content)
+
+def create_personas_md(personas_folder, personas_md):
+    for persona in os.listdir(personas_folder):
+        # persona title should be all text before last - in filename
+        persona_id = persona.split("-")[-1].split(".")[0]
+        personas_md += "## " + persona.replace("-" + persona_id + ".json", "") + "\n\n"
+        # init_personas_md += "## " + persona_title + "\n\n"
+        persona_obj = json.load(open(personas_folder + "/" + persona))
+        for key in persona_obj:
+            personas_md += "**" + key + "**: " + "\n\n"
+            ## if key is a list
+            if isinstance(persona_obj[key], list):
+                for item in persona_obj[key]:
+                    personas_md += "- " + item + "\n\n"
+            ## if key is a dict
+            elif isinstance(persona_obj[key], dict):
+                for item in persona_obj[key]:
+                    personas_md += "- " + item + ": " + persona_obj[key][item] + "\n\n"
+            ## if key is a string
+            else:
+                personas_md += "- " + persona_obj[key] + "\n\n"
+        personas_md += "\n\n"
+    return personas_md
+
+def create_interview_md(interview_questions, interview_md):
+    ## loop through interview question keys
+    
+    for question in interview_questions:
+        if isinstance(question, dict):
+            interview_md += "- " + question["question"] + "\n\n"
+        else:
+            interview_md += "- " + question + "\n\n"
+    # for key in interview_questions:
+    #     interview_md += "**" + key.replace("_", " ") + "**: \n\n"
+    #     ## if key is a list
+    #     if isinstance(interview_questions[key], list):
+    #         for item in interview_questions[key]:
+    #             interview_md += "- " + item + "\n\n"
+    #     ## if key is a dict
+    #     elif isinstance(interview_questions[key], dict):
+    #         for item in interview_questions[key]:
+    #             interview_md += "- " + item + ": " + interview_questions[key][item] + "\n\n"
+    #     ## if key is a string
+    #     else:
+    #         interview_md += "- " + interview_questions[key] + "\n\n"
+    return interview_md
+
+def create_product_md(product, product_md):
+    for key in product:
+        if key != "product_name" and key != "name":
+            product_md += "**" + key.replace("_", " ") + "**: \n\n"
+            ## if key is a list
+            if isinstance(product[key], list):
+                for item in product[key]:
+                    product_md += "- " + item + "\n\n"
+            ## if key is a dict
+            elif isinstance(product[key], dict):
+                for item in product[key]:
+                    product_md += "- " + item + ": " + product[key][item] + "\n\n"
+            ## if key is a string
+            else:
+                product_md += "- " + product[key] + "\n\n"
+    return product_md
+
+def create_feedback_md(feedback, feedback_md):
+    # print(feedback_md)
+    for fb in feedback:
+        for key in fb:
+            ## add feedback question then feedback answer
+            feedback_md += "**" + key + "**: \n\n"
+            feedback_md += "- " + fb[key] + "\n\n"
+        # for key in fb:
+        #     ## if key is a list
+        #     if isinstance(fb[key], list):
+        #         for item in fb[key]:
+        #             feedback_md += "- " + item + "\n\n"
+        #     ## if key is a dict
+        #     elif isinstance(fb[key], dict):
+        #         for item in fb[key]:
+        #             feedback_md += "- " + item + ": " + fb[key][item] + "\n\n"
+        #     ## if key is a string
+        #     else:
+        #         feedback_md += "- " + fb[key] + "\n\n"
+    return feedback_md
+
+def prettify_results(res_id):
+    target_folder = "results/" + str(res_id)
+    toc = {}
+    toc_md = "# Table of Contents\n\n"
+    ## create folder for readable results
+    if not os.path.exists(target_folder + "/readable_results"):
+        os.makedirs(target_folder + "/readable_results")
+
+    ## create md file for initial questions from init_interview_questions.json
+    init_interview_questions = json.load(open(target_folder + "/init_interview_questions.json"))
+    init_interview_questions_md = create_interview_md(init_interview_questions, "# Initial Interview Questions\n\n")
+    save_md(target_folder + "/readable_results", "init_interview_questions.md", init_interview_questions_md)
+    ## add link to toc_md
+    toc_md += "- [Initial Interview Questions](init_interview_questions.md)\n\n"
+
+    ## create md file for personas from jsons in the personas folder
+    init_personas_md = create_personas_md(target_folder + "/personas", "# Initial Personas\n\n")
+    save_md(target_folder + "/readable_results", "init_personas.md", init_personas_md)
+    toc_md += "- [Initial Personas](init_personas.md)\n\n"
+
+    ## create md file for interviews in init_interviews folder
+    init_interviews_md = "# Initial Interviews\n\n"
+    for interview in os.listdir(target_folder + "/init_interviews"):
+        init_interviews_md += "## " + interview.replace(".json", "") + "\n\n"
+        init_interviews_md = create_feedback_md(json.load(open(target_folder + "/init_interviews/" + interview)), init_interviews_md)
+    save_md(target_folder + "/readable_results", "init_interviews.md", init_interviews_md)
+    toc_md += "- [Initial Interviews](init_interviews.md)\n\n"
+
+    ## create md file for each initial product idea from product_ideas.json in a new folder
+    init_product_ideas = json.load(open(target_folder + "/product_ideas.json"))
+    if not os.path.exists(target_folder + "/readable_results/init_product_ideas"):
+        os.makedirs(target_folder + "/readable_results/init_product_ideas")
+    toc_md += "- Initial Product Ideas\n\n"
+    for product in init_product_ideas:
+        if "name" in product:
+            product_name = product["name"]
+        else:
+            product_name = product["product_name"]
+        init_product_ideas_md = create_product_md(product, "# " + product_name + "\n\n")
+        save_md(target_folder + "/readable_results/init_product_ideas", product_name.replace(" ", "_") + ".md", init_product_ideas_md)
+        toc_md += "  - [" + product_name + "](" + product_name.replace(" ", "_") + ".md)\n\n"
+        init_product_ideas_md = ""
+    
+    ## loop through iterations folders in iterations folder by lowest number first
+    iterations = os.listdir(target_folder + "/iterations")
+    iterations = sorted(iterations, key=lambda k: int(k.split("-")[0]))
+    for iteration in iterations:
+        iteration_number = str(int(iteration) + 1)
+        # print(iteration_number)
+        ## create folder for iteration
+        if not os.path.exists(target_folder + "/readable_results/" + iteration_number):
+            os.makedirs(target_folder + "/readable_results/" + iteration_number)
+        toc_md += "- Iteration " + iteration_number + "\n\n"
+        ## create md file for iteration questions from feedback_questions.json
+        feedback_questions = json.load(open(target_folder + "/iterations/" + iteration + "/feedback_questions.json"))
+        feedback_questions_md = create_interview_md(feedback_questions, "# Feedback Questions\n\n")
+        save_md(target_folder + "/readable_results/" + iteration_number, "feedback_questions.md", feedback_questions_md)
+        toc_md += "  - [Feedback Questions](" + iteration_number + "/feedback_questions.md)\n\n"
+        ## create persona md file for iteration
+        personas_md = create_personas_md(target_folder + "/iterations/" + iteration + "/personas", "# Personas\n\n")
+        save_md(target_folder + "/readable_results/" + iteration_number, "personas.md", personas_md)
+        toc_md += "  - [Personas](" + iteration_number + "/personas.md)\n\n"
+        ## create md file for each product folder in feedback_interviews folder
+        toc_md += "  - Feedback Interviews\n\n"
+        if not os.path.exists(target_folder + "/readable_results/" + iteration_number + "/feedback_interviews"):
+            os.makedirs(target_folder + "/readable_results/" + iteration_number + "/feedback_interviews")
+        for product in os.listdir(target_folder + "/iterations/" + iteration + "/feedback_interviews"):
+            # print(product)
+            ## if product is a directory
+            if os.path.isdir(target_folder + "/iterations/" + iteration + "/feedback_interviews/" + product):
+                feedback_interviews_md = "# " + product.replace(".json", "") + "\n\n"
+                for interview in os.listdir(target_folder + "/iterations/" + iteration + "/feedback_interviews/" + product):
+                    if interview != "product_feedback.json" and interview != "sum_product_feedback_interviews.json":
+                        # print(interview)
+                        feedback_interviews_md += "## " + interview.replace(".json", "") + "\n\n"
+                        feedback_interviews_md = create_feedback_md(json.load(open(target_folder + "/iterations/" + iteration + "/feedback_interviews/" + product + "/" + interview)), feedback_interviews_md)
+                save_md(target_folder + "/readable_results/" + iteration_number + "/feedback_interviews", product.replace(".json", "").replace(" ", "_") + ".md", feedback_interviews_md)
+                toc_md += "    - [" + product.replace(".json", "") + "](" + iteration_number + "/feedback_interviews/" + product.replace(".json", "").replace(" ", "_") + ".md)\n\n"
+                feedback_interviews_md = ""
+        ## create md file for each product folder in evolved_products folder
+        toc_md += "  - Evolved Products\n\n"
+        if not os.path.exists(target_folder + "/readable_results/" + iteration_number + "/evolved_products"):
+            os.makedirs(target_folder + "/readable_results/" + iteration_number + "/evolved_products")
+        for product in os.listdir(target_folder + "/iterations/" + iteration + "/evolved_products"):
+            if product != "evolved_products.json":
+                evolved_products_md = create_product_md(json.load(open(target_folder + "/iterations/" + iteration + "/evolved_products/" + product)), "# " + product.replace(".json", "") + "\n\n")
+                save_md(target_folder + "/readable_results/" + iteration_number + "/evolved_products", product.replace(".json", "").replace(" ", "_") + ".md", evolved_products_md)
+                toc_md += "    - [" + product.replace(".json", "") + "](" + iteration_number + "/evolved_products/" + product.replace(".json", "").replace(" ", "_") + ".md)\n\n"
+                evolved_products_md = ""
+
+    ## create md file for each final product idea from final_product_ideas.json in a new folder
+    if not os.path.exists(target_folder + "/readable_results/final_product_ideas"):
+        os.makedirs(target_folder + "/readable_results/final_product_ideas")
+    toc_md += "- Final Product Ideas\n\n"
+    final_product_ideas = json.load(open(target_folder + "/final_products.json"))
+    for product in final_product_ideas:
+        if "name" in product:
+            product_name = product["name"]
+        else:
+            product_name = product["product_name"]
+        final_product_ideas_md = create_product_md(product, "# " + product_name + "\n\n")
+        save_md(target_folder + "/readable_results/final_product_ideas", product_name.replace(" ", "_") + ".md", final_product_ideas_md)
+        toc_md += "  - [" + product_name + "](final_product_ideas/" + product_name.replace(" ", "_") + ".md)\n\n"
+        final_product_ideas_md = "" 
+
+    save_md(target_folder + "/readable_results", "toc.md", toc_md)
+
 def autovate_instance(res_id):
     results_folder = "results/" + str(res_id)
     log_milestones("Starting autovate instance", res_id)
@@ -686,6 +881,7 @@ def autovate_instance(res_id):
     save_json(results_folder, "final_products.json", product_ideas)
     log_milestones("Finished autovate instance", res_id)
     sort_products(res_id)
+    prettify_results(res_id)
 
 
 
