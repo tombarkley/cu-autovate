@@ -686,7 +686,7 @@ def create_interview_md(interview_questions, interview_md):
 
 def create_product_md(product, product_md):
     for key in product:
-        if key != "product_name":
+        if key != "product_name" and key != "name":
             product_md += "**" + key.replace("_", " ") + "**: \n\n"
             ## if key is a list
             if isinstance(product[key], list):
@@ -756,8 +756,11 @@ def prettify_results(res_id):
         os.makedirs(target_folder + "/readable_results/init_product_ideas")
     toc_md += "- Initial Product Ideas\n\n"
     for product in init_product_ideas:
-        product_name = product["product_name"]
-        init_product_ideas_md = create_product_md(product, "# " + product["product_name"] + "\n\n")
+        if "name" in product:
+            product_name = product["name"]
+        else:
+            product_name = product["product_name"]
+        init_product_ideas_md = create_product_md(product, "# " + product_name + "\n\n")
         save_md(target_folder + "/readable_results/init_product_ideas", product_name.replace(" ", "_") + ".md", init_product_ideas_md)
         toc_md += "  - [" + product_name + "](" + product_name.replace(" ", "_") + ".md)\n\n"
         init_product_ideas_md = ""
@@ -815,9 +818,13 @@ def prettify_results(res_id):
     toc_md += "- Final Product Ideas\n\n"
     final_product_ideas = json.load(open(target_folder + "/final_products.json"))
     for product in final_product_ideas:
-        final_product_ideas_md = create_product_md(product, "# " + product["product_name"] + "\n\n")
-        save_md(target_folder + "/readable_results/final_product_ideas", product["product_name"].replace(" ", "_") + ".md", final_product_ideas_md)
-        toc_md += "  - [" + product["product_name"] + "](final_product_ideas/" + product["product_name"].replace(" ", "_") + ".md)\n\n"
+        if "name" in product:
+            product_name = product["name"]
+        else:
+            product_name = product["product_name"]
+        final_product_ideas_md = create_product_md(product, "# " + product_name + "\n\n")
+        save_md(target_folder + "/readable_results/final_product_ideas", product_name.replace(" ", "_") + ".md", final_product_ideas_md)
+        toc_md += "  - [" + product_name + "](final_product_ideas/" + product_name.replace(" ", "_") + ".md)\n\n"
         final_product_ideas_md = "" 
 
     save_md(target_folder + "/readable_results", "toc.md", toc_md)
@@ -893,6 +900,9 @@ def autovate_instance(res_id):
 # print(new_result)
 
 # autovate_instance(20230522132907)
-prettify_results(20230520125944)
+# prettify_results(20230521120355)
+# prettify_results(20230521182324)
+# prettify_results(20230522132907)
+
 
 
